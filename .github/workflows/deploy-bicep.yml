@@ -1,0 +1,75 @@
+name: 'Déploiement Infrastructure ressources recursifsif Bicep'
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment de déploiement (dev/uat/prod)'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+      branch:
+        description: 'Branche de déploiement'
+        required: true
+        default: 'develop'
+        type: choice
+        options:
+          - develop
+          - main
+
+
+permissions:
+  id-token: write
+  contents: read   # Add read permission for repository contents
+
+jobs: 
+  Deploiement:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    
+    steps:
+    - name: Clean workspace
+      run: |
+        rm -rf ./* ./.[!.]*
+        
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.inputs.branch }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        clean: true
+        fetch-depth: 0
+
+    - name: Azure CLI Login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  
+    - name: Azure CLI script
+      uses: azure/cli@v2
+      with:
+        azcliversion: latest
+        inlineScript: |
+          az account show
+
+    - name: 'Deploy Bicep files'
+      uses: azure/arm-deploy@v2
+      with:
+        subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        scope: resourcegroup
+        resourceGroupName: 'githubactionpub'
+        region: 'canadacentral'
+        template: ./bicep1/main.bicep        # Updated path to match repository root
+        deploymentName: 'deployment-${{ github.run_number }}-${{ github.run_attempt }}'
+        deploymentMode: Incremental
+        failOnStdErr: false
+      id: deploy_bicep
+
+
+
+
