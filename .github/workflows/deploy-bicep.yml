@@ -1,4 +1,4 @@
-name: 'Déploiement Infrastructure ressources recursifsif Bicep'
+name: 'WorkflowApproval'
 
 on:
   workflow_dispatch:
