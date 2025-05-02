@@ -1,7 +1,7 @@
 @description('Names of the storage accounts to create')
 var storageAccountNames = [
-  'mystorageacct1'
-  'mystorageacct2'
+  'mystorageacct1lrdup3'
+  'mystorageacct2lrdup3'
 ]
 
 @description('Location for the storage accounts')
