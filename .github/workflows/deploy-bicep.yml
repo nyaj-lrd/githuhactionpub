@@ -6,7 +6,7 @@ on:
       environment:
         description: 'Environment de déploiement (dev/uat/prod)'
         required: true
-        default: 'dev'
+        default: 'prod'
         type: choice
         options:
           - dev
@@ -14,7 +14,7 @@ on:
       branch:
         description: 'Branche de déploiement'
         required: true
-        default: 'develop'
+        default: 'main'
         type: choice
         options:
           - develop
